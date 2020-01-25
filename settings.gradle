@@ -1,2 +1,4 @@
 rootProject.name = 'gradle-learn'
+include 'gradle'
+include 'java'
 

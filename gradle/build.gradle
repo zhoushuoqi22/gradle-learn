@@ -14,3 +14,81 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+//定义任务
+//doLast之外的内容，无论如何都会执行，而且是在configuration阶段执行。
+//而doLast内的内容只会在task名作为参数传入的时候才会执行，而且是在execute阶段执行。
+
+//Task :task2 UP-TO-DATE 证明task的输出没有改变，会使用之前缓存的结果
+task hello {
+    doLast {
+        println('Hello World!')
+    }
+    println('hello')
+}
+
+task hello2 {
+    println('hello2')
+    doLast {
+        println('hello2, dolast')
+    }
+}
+//使用groovy语法
+task upper_myname {
+    String someString = 'mY naMe'
+    println(someString)
+    println(someString.toUpperCase())
+}
+
+task count {
+    4.times {print("$it ")}
+}
+//任务依赖
+task intro(dependsOn: [hello, hello2]) {
+    println('intro task')
+}
+
+//这个会创建4个task，分别是task0 task1 task2 task3
+4.times { counter ->
+    task "task$counter" {
+        println "I'm task number $counter"
+    }
+}
+//设置task0依赖于task2和task3
+task0.dependsOn(task2, task3)
+
+//定义多个dofirst和dolast, 分别在hello执行之前和之后执行定义的方法
+hello.doFirst {println('hello dofirst1')}
+hello.doLast {println('hello, dolast1')}
+hello.doFirst {println('hello, dofirst2')}
+hello.doLast {println('hello, dolast2')}
+
+task myTask {
+    ext.myPropertises = 'myValue'
+}
+
+task printTaskProperties {
+    println(myTask.myPropertises)
+}
+
+//defaultTasks这个使用方式
+//defaultTasks('clean', 'hello')
+
+task distribution {
+    println("We build the zip with version=$version")
+}
+
+//使用release的时候version没有改变
+task release(dependsOn: 'distribution') {
+    println('We release now')
+}
+
+gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(release)) {
+        println('has release')
+        version = '1.0'
+    } else {
+        println('no release')
+        version = '1.0-SNAPSHOT'
+    }
+}
