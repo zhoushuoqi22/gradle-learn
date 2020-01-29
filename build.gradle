@@ -1,16 +1,24 @@
-plugins {
-    id 'java'
-}
+//放在这里面代表适用于每个模块
+allprojects {
 
-group 'org.learn'
-version '1.0-SNAPSHOT'
+    //指定使用java plugins
+    apply plugin: "java"
 
-sourceCompatibility = 1.8
+    group 'org.learn'
+    version '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-}
+    sourceCompatibility = 1.8
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    //指定mvn库
+    repositories {
+        mavenLocal()//先从本地仓库中寻找
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/groups/public'
+        }
+    }
+
+    //testCompile为jar包的作用域，这个表示只有在测试的时候使用这个jar包
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
 }
